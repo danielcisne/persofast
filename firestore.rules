@@ -1,0 +1,86 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------
+    // 🛠️ FUNCIONES DE AYUDA (BLINDADAS CONTRA CRASHES)
+    // ---------------------------------------------------------
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Traemos el documento de forma segura
+    function getUserDoc() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid));
+    }
+
+    // Usamos .get() con un valor vacío por defecto para evitar "Evaluation Errors"
+    function isRole(role) {
+      return isAuthenticated() && 
+             getUserDoc() != null && 
+             getUserDoc().data.get('rol', '') == role;
+    }
+
+    // Función segura para verificar al Cliente y su Empresa
+    function isClienteDeEmpresa(empresaRequest) {
+      return isRole('Cliente') && 
+             getUserDoc().data.get('empresa', 'Sin Empresa') == empresaRequest;
+    }
+
+    // ---------------------------------------------------------
+    // 🛡️ REGLAS POR COLECCIÓN
+    // ---------------------------------------------------------
+
+    // 👥 COLECCIÓN: usuarios
+    match /usuarios/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isRole('Administrador'));
+      allow write: if isRole('Administrador');
+    }
+
+    // 📄 COLECCIÓN: solicitudes
+    match /solicitudes/{solicitudId} {
+      allow read: if isAuthenticated() && (
+        isRole('Administrador') || isRole('Analista') || isRole('Mesa') || isRole('Administracion') ||
+        isClienteDeEmpresa(resource.data.empresa)
+      );
+
+      allow create: if isAuthenticated() && (
+        isRole('Administrador') || 
+        isClienteDeEmpresa(request.resource.data.empresa)
+      );
+
+      allow update: if isAuthenticated() && (
+        isRole('Administrador') || isRole('Analista') || isRole('Mesa') || isRole('Administracion')
+      );
+
+      allow delete: if isRole('Administrador');
+    }
+
+    // 🕒 SUBCOLECCIÓN: bitácora
+    match /solicitudes/{solicitudId}/bitacora/{logId} {
+      allow read: if isAuthenticated(); 
+      // Se requiere que sea un usuario registrado en el sistema
+      allow create: if isAuthenticated() && getUserDoc() != null;
+      // Pero solo tu equipo interno puede modificar o borrar logs
+      allow update, delete: if isRole('Administrador') || isRole('Analista') || isRole('Mesa') || isRole('Administracion');
+    }
+
+    // 🔢 COLECCIÓN: metadata (Contador de folios)
+    match /metadata/contadores {
+      allow read: if isAuthenticated();
+      // Solo permitimos incrementar el contador en 1 exactamente
+      allow update: if isAuthenticated() && 
+                    request.resource.data.totalSolicitudes == resource.data.totalSolicitudes + 1;
+      allow create, delete: if isRole('Administrador');
+    }
+
+    // 📧 COLECCIÓN: mail (Cola de correos)
+    match /mail/{mailId} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if isRole('Administrador');
+    }
+
+  }
+}

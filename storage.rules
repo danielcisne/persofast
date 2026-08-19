@@ -1,0 +1,55 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Verificamos el rol directamente desde Firestore (Cross-Service Rules)
+    function isInternalTeam() {
+      return isAuthenticated() && 
+             firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.rol in ['Administrador', 'Analista', 'Mesa', 'Administracion'];
+    }
+
+    // Bloqueamos TODO por defecto
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // 📁 CARPETA: cvs
+    match /cvs/{fileName} {
+      // Leer: Todos los usuarios logueados pueden ver el CV
+      allow read: if isAuthenticated();
+      
+      // Crear (Subir): Solo logueados, máximo 5MB, y solo PDF o Imágenes
+      allow create: if isAuthenticated() 
+                    && request.resource.size < 5 * 1024 * 1024 // 5 MB de límite
+                    && request.resource.contentType.matches('application/pdf|image/.*');
+      
+      // No permitimos actualizar ni borrar CVs desde el cliente (solo por consola de Firebase)
+      allow update, delete: if false; 
+    }
+
+    // 📁 CARPETA: fotos (Preparando el terreno para nuestra galería)
+    match /fotos/{fileName} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() 
+                    && request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
+    }
+
+    // 👇 NUEVA CARPETA: estudios (Para las fotos del Paso 7) 👇
+    match /estudios/{solicitudId}/{fileName} {
+      allow read: if isAuthenticated();
+      
+      allow create: if isAuthenticated() 
+                    && request.resource.size < 5 * 1024 * 1024 // Máximo 5MB
+                    && request.resource.contentType.matches('image/.*'); // Solo imágenes
+                    
+      // Solo el equipo interno puede borrar (para corregir fotos en captura/auditoría)
+      allow delete: if isInternalTeam(); 
+    }
+  }
+}
