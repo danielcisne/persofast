@@ -59,12 +59,34 @@ service cloud.firestore {
     }
 
     // 🕒 SUBCOLECCIÓN: bitácora
+    // El acceso hereda los permisos de la solicitud asociada.
+    
     match /solicitudes/{solicitudId}/bitacora/{logId} {
-      allow read: if isAuthenticated(); 
-      // Se requiere que sea un usuario registrado en el sistema
+    
+      // Lectura:
+      // - Equipo interno: acceso a la bitácora.
+      // - Cliente: solo si pertenece a la empresa de la solicitud.
+      allow read: if isAuthenticated() && (
+        isRole('Administrador') ||
+        isRole('Analista') ||
+        isRole('Mesa') ||
+        isRole('Administracion') ||
+        isClienteDeEmpresa(
+          get(/databases/$(database)/documents/solicitudes/$(solicitudId)).data.empresa
+        )
+      );
+    
+      // Crear registros:
+      // Solo usuarios autenticados que tengan un registro válido
+      // en la colección usuarios.
       allow create: if isAuthenticated() && getUserDoc() != null;
-      // Pero solo tu equipo interno puede modificar o borrar logs
-      allow update, delete: if isRole('Administrador') || isRole('Analista') || isRole('Mesa') || isRole('Administracion');
+    
+      // Solo el equipo interno puede modificar o eliminar registros.
+      allow update, delete: if isRole('Administrador') ||
+        isRole('Analista') ||
+        isRole('Mesa') ||
+        isRole('Administracion');
+    
     }
 
     // 🔢 COLECCIÓN: metadata (Contador de folios)
