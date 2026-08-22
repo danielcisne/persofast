@@ -40,16 +40,30 @@ service firebase.storage {
                     && request.resource.contentType.matches('image/.*');
     }
 
-    // 👇 NUEVA CARPETA: estudios (Para las fotos del Paso 7) 👇
+    // 📁 CARPETA: estudios
     match /estudios/{solicitudId}/{fileName} {
-      allow read: if isAuthenticated();
-      
-      allow create: if isAuthenticated() 
-                    && request.resource.size < 5 * 1024 * 1024 // Máximo 5MB
-                    && request.resource.contentType.matches('image/.*'); // Solo imágenes
-                    
-      // Solo el equipo interno puede borrar (para corregir fotos en captura/auditoría)
-      allow delete: if isInternalTeam(); 
+    
+      // Lectura:
+      // - Equipo interno: acceso completo.
+      // - Cliente: solo si pertenece a la empresa de la solicitud.
+      allow read: if isInternalTeam() ||
+        (
+          isAuthenticated() &&
+          firestore.get(
+            /databases/(default)/documents/solicitudes/$(solicitudId)
+          ).data.get('empresa', '') ==
+          firestore.get(
+            /databases/(default)/documents/usuarios/$(request.auth.uid)
+          ).data.get('empresa', '')
+        );
+    
+      // Solo usuarios del equipo interno pueden subir evidencias.
+      allow create: if isInternalTeam()
+                    && request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
+    
+      // Solo el equipo interno puede eliminar evidencias.
+      allow delete: if isInternalTeam();
     }
   }
 }
