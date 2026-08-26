@@ -1,4 +1,3 @@
-// src/components/pdf/ReportePDF.tsx
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import type { Solicitud } from '../../types';
 
@@ -58,7 +57,6 @@ const styles = StyleSheet.create({
     propertyPhoto: { width: '47%', height: 180, objectFit: 'cover', borderRadius: 4, marginBottom: 15, border: '1 solid #e5e7eb' }
 });
 
-// 🔥 Le agregamos wrap={false} a la fila para que nunca se parta a la mitad
 const FilaTabla = ({ etiqueta, valor }: { etiqueta: string, valor: any }) => {
     const mostrarValor = valor !== undefined && valor !== null && String(valor).trim() !== '' && String(valor) !== 'undefined';
     return (
@@ -201,7 +199,6 @@ export default function ReportePDF({ solicitud }: { solicitud: Solicitud }) {
                     </View>
                 </View>
 
-                {/* 🔥 Envolvemos cada sección en un View con wrap={false} */}
                 <View wrap={false}>
                     <Text style={styles.sectionTitle}>I. Información Genérica</Text>
                     <View style={styles.table}>
