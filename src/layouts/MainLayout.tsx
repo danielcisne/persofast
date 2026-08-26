@@ -1,4 +1,3 @@
-// src/layouts/MainLayout.tsx
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, FileText, Users, LogOut, UserCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -23,8 +22,6 @@ export default function MainLayout() {
   return (
     <div className="flex h-screen bg-slate-50">
       <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col">
-        {/* LOGO PROFESIONAL INTEGRADO */}
-        {/* LOGO PROFESIONAL INTEGRADO */}
         <div className="h-16 flex items-center justify-center px-4 border-b border-slate-800 bg-slate-900">
            <div className="bg-white p-1 rounded w-full flex justify-center">
              <img src={logoPersofast} alt="Logo Persofast Securitas" className="h-8 object-contain" />
