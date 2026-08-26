@@ -36,7 +36,7 @@ export default function Paso6Laboral({ datos = {} as any, onChange }: Props) {
   return (
     <div className="space-y-10 animate-fadeIn">
 
-      {/* 🏢 SECCIÓN VIa: HISTORIAL LABORAL */}
+     
       <div>
         <div className="flex justify-between items-center mb-4 border-b pb-2">
           <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">VIa. Historial Laboral (Del más reciente al más antiguo)</h3>
@@ -69,7 +69,6 @@ export default function Paso6Laboral({ datos = {} as any, onChange }: Props) {
                   </button>
                 </div>
 
-                {/* BLOQUE 1: Datos de la Empresa */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-lg mb-6">
                   <div className="md:col-span-2">
                     <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase">Empresa</label>
@@ -89,7 +88,6 @@ export default function Paso6Laboral({ datos = {} as any, onChange }: Props) {
                   </div>
                 </div>
 
-                {/* BLOQUE 2: Matriz de Periodos y Puestos */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 text-sm">
                   <div className="hidden md:block font-semibold text-slate-600 text-xs uppercase bg-slate-100 py-1.5 px-2 rounded text-center">Al Ingresar</div>
                   <div className="hidden md:block font-semibold text-slate-600 text-xs uppercase bg-slate-100 py-1.5 px-2 rounded text-center">Al Salir / Actual</div>
@@ -157,7 +155,6 @@ export default function Paso6Laboral({ datos = {} as any, onChange }: Props) {
         )}
       </div>
 
-      {/* 🤝 SECCIÓN VIb: REFERENCIAS PERSONALES */}
       <div>
         <div className="flex justify-between items-center mb-4 border-b pb-2">
           <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">VIb. Referencias Personales</h3>
