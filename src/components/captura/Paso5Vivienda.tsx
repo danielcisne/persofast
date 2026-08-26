@@ -9,7 +9,6 @@ interface Props {
 
 export default function Paso5Vivienda({ datos = {} as any, onChange }: Props) {
 
-  // 👇 CORRECCIÓN: Cambiamos "seccion: keyof Omit..." por "seccion: string"
   const handleNestedChange = (
     seccion: string,
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -56,7 +55,6 @@ export default function Paso5Vivienda({ datos = {} as any, onChange }: Props) {
   return (
     <div className="space-y-10 animate-fadeIn">
 
-      {/* 🏡 SECCIÓN: EXTERNA */}
       <div>
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2">Va. Presentación Externa</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -100,7 +98,7 @@ export default function Paso5Vivienda({ datos = {} as any, onChange }: Props) {
         </div>
       </div>
 
-      {/* 🛋️ SECCIÓN: INTERNA */}
+     
       <div>
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2">Vb. Presentación Interna</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -141,7 +139,7 @@ export default function Paso5Vivienda({ datos = {} as any, onChange }: Props) {
         </div>
       </div>
 
-      {/* 🖼️ SECCIÓN: DECORADO */}
+    
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
           <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2">Vc. Decorado</h3>
@@ -160,7 +158,7 @@ export default function Paso5Vivienda({ datos = {} as any, onChange }: Props) {
         </div>
       </div>
 
-      {/* 🗺️ SECCIÓN: CARACTERÍSTICAS */}
+     
       <div>
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2">Vd. Otras Características</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -222,7 +220,7 @@ export default function Paso5Vivienda({ datos = {} as any, onChange }: Props) {
         </div>
       </div>
 
-      {/* 🚗 SECCIÓN: OTROS BIENES (Autos e Inmuebles) */}
+    
       <div>
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2">Ve. Otros Bienes (Autos)</h3>
         <div className="overflow-x-auto rounded-lg border border-slate-200 mb-6">
@@ -302,7 +300,7 @@ export default function Paso5Vivienda({ datos = {} as any, onChange }: Props) {
           </table>
         </div>
 
-        {/* Cierre de la sección de bienes */}
+      
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Información proporcionada por:</label>
