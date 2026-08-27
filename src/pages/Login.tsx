@@ -1,11 +1,9 @@
-// src/pages/Login.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, LogIn } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 
-// IMPORTACIÓN DEL LOGO (.png confirmado)
 import logoPersofast from '../assets/PersofastSecuritasLogoGem.png';
 
 export default function Login() {
@@ -36,23 +34,18 @@ export default function Login() {
       
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         
-        {/* LA TARJETA COMPLETA (Ahora todo comparte el mismo contenedor y márgenes) */}
         <div className="bg-white shadow-xl border border-slate-200 sm:rounded-2xl py-8 px-4 sm:px-10">
           
-          {/* 👇 LOGO: Mismo ancho que los inputs (w-full) y esquinas redondeadas (rounded-xl) 👇 */}
           <div className="mb-6">
             <img 
               src={logoPersofast} 
               alt="Logo Persofast Securitas" 
-              /* Le agregamos un borde sutil para que el redondeo se note perfectamente */
               className="w-full h-auto object-contain rounded-xl border border-slate-100 shadow-sm" 
             />
           </div>
 
-          {/* SECCIÓN DEL FORMULARIO */}
           <form className="space-y-6" onSubmit={handleLogin}>
             
-            {/* Mensaje de Error */}
             {error && (
               <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-md">
                 <p className="text-sm text-red-700 font-medium">{error}</p>
