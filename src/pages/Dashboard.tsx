@@ -15,7 +15,6 @@ export default function Dashboard() {
   useEffect(() => {
     if (!perfil) return;
 
-    // 1. Consultar Solicitudes (Filtradas si es Cliente)
     let qSolicitudes = collection(db, 'solicitudes') as any;
     if (perfil.rol === 'Cliente') {
       qSolicitudes = query(collection(db, 'solicitudes'), where('empresa', '==', perfil.empresa));
@@ -24,13 +23,11 @@ export default function Dashboard() {
     const unsubscribeSol = onSnapshot(qSolicitudes, (snapshot: any) => {
       const data = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() })) as Solicitud[];
 
-      // Ordenamos por folio de mayor a menor para tener los más recientes primero
       const ordenadas = data.sort((a, b) => (Number(b.folio) || 0) - (Number(a.folio) || 0));
       setSolicitudes(ordenadas);
       setCargando(false);
     });
 
-    // 2. Consultar total de Analistas (Solo para equipo interno)
     let unsubscribeUsu = () => { };
     if (perfil.rol === 'Administrador' || perfil.rol === 'Administracion' || perfil.rol === 'Mesa') {
       const qUsu = query(collection(db, 'usuarios'), where('rol', '==', 'Analista'));
@@ -45,12 +42,10 @@ export default function Dashboard() {
     };
   }, [perfil]);
 
-  // Cálculos de Métricas
   const activos = solicitudes.filter(s => s.estatus !== 'Completado' && s.estatus !== 'Cancelado').length;
   const enProceso = solicitudes.filter(s => ['En Proceso', 'Integración', 'Citado', 'Por Aprobar'].includes(s.estatus)).length;
   const completados = solicitudes.filter(s => s.estatus === 'Completado').length;
 
-  // Tomamos solo las 5 más recientes para la tabla
   const recientes = solicitudes.slice(0, 5);
 
   if (cargando) {
@@ -66,10 +61,8 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* 📊 TARJETAS DE MÉTRICAS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-        {/* Tarjeta 1: Activos */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4">
           <div className="w-14 h-14 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
             <ClipboardList size={28} />
@@ -80,7 +73,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Tarjeta 2: En Proceso */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4">
           <div className="w-14 h-14 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
             <Clock size={28} />
@@ -91,7 +83,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Tarjeta 3: Dinámica por Rol */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4">
           {perfil?.rol === 'Cliente' ? (
             <>
@@ -118,7 +109,6 @@ export default function Dashboard() {
 
       </div>
 
-      {/* 📋 TABLA DE ESTUDIOS RECIENTES */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
           <h2 className="text-lg font-bold text-slate-800">Estudios Recientes</h2>
