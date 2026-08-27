@@ -1,4 +1,3 @@
-// src/pages/NuevaSolicitud.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, doc, runTransaction } from 'firebase/firestore';
@@ -37,7 +36,7 @@ export default function NuevaSolicitud() {
       const file = e.target.files[0];
       if (file.size > 5 * 1024 * 1024) {
         alert('El archivo supera el límite de 5MB. Por favor, selecciona un archivo más pequeño.');
-        e.target.value = ''; // Limpiar el input
+        e.target.value = '';
         return;
       }
       setCvFile(file);
@@ -52,7 +51,6 @@ export default function NuevaSolicitud() {
     try {
       let cvUrlFinal = '';
 
-      // 1. SUBIR EL CV A STORAGE 
       if (cvFile) {
         setEstadoSubida('Subiendo CV a la nube...');
         const storage = getStorage();
@@ -63,13 +61,10 @@ export default function NuevaSolicitud() {
 
       setEstadoSubida('Generando Folio y guardando...');
 
-      // 2. REFERENCIAS PARA LA TRANSACCIÓN
       const contadorRef = doc(db, 'metadata', 'contadores');
       const nuevaSolicitudRef = doc(collection(db, 'solicitudes'));
-      // Referencia para la subcolección de bitácora dentro de esta nueva solicitud
       const bitacoraRef = doc(collection(db, 'solicitudes', nuevaSolicitudRef.id, 'bitacora'));
 
-      // 3. EJECUTAMOS LA TRANSACCIÓN ATÓMICA MÚLTIPLE
       await runTransaction(db, async (transaction) => {
         const contadorDoc = await transaction.get(contadorRef);
 
@@ -77,11 +72,9 @@ export default function NuevaSolicitud() {
           throw new Error("¡El documento de contadores no existe en Firestore!");
         }
 
-        // A) Actualizamos el folio
         const nuevoFolio = contadorDoc.data().totalSolicitudes + 1;
         transaction.update(contadorRef, { totalSolicitudes: nuevoFolio });
 
-        // B) Creamos la Solicitud
         transaction.set(nuevaSolicitudRef, {
           folio: nuevoFolio,
           empresa: perfil.empresa || 'Empresa Interna',
@@ -103,7 +96,6 @@ export default function NuevaSolicitud() {
           }
         });
 
-        // C) Creamos el LOG INICIAL en la Bitácora
         transaction.set(bitacoraRef, {
           fecha: new Date().toISOString(),
           accion: 'El cliente creó la solicitud en el sistema y adjuntó los documentos.',
@@ -111,13 +103,11 @@ export default function NuevaSolicitud() {
           nombreUsuario: perfil.nombre
         });
 
-        // D) Encolamos los CORREOS ELECTRÓNICOS en la colección 'mail'
         const folioFormateado = `FOL-${String(nuevoFolio).padStart(4, '0')}`;
 
-        // Correo para el Cliente
         const mailClienteRef = doc(collection(db, 'mail'));
         transaction.set(mailClienteRef, {
-          to: perfil.email, // Enviamos al correo de quien inició sesión
+          to: perfil.email, 
           message: {
             subject: `Persofast - Solicitud Recibida: ${folioFormateado}`,
             html: `<p>Hola <b>${perfil.nombre}</b>,</p>
@@ -126,10 +116,9 @@ export default function NuevaSolicitud() {
           }
         });
 
-        // Correo para el Administrador
         const mailAdminRef = doc(collection(db, 'mail'));
         transaction.set(mailAdminRef, {
-          to: 'admin@persofast.com', // Aquí pondremos tu correo real de admin después
+          to: 'admin@persofast.com', 
           message: {
             subject: `🚨 NUEVA SOLICITUD: ${folioFormateado} - ${perfil.empresa}`,
             html: `<p>El cliente <b>${perfil.empresa}</b> ha generado una nueva solicitud.</p>
@@ -169,7 +158,6 @@ export default function NuevaSolicitud() {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-8">
 
-          {/* SECCIÓN 1: SERVICIO */}
           <div>
             <h3 className="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">1. Datos del Servicio</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -188,7 +176,6 @@ export default function NuevaSolicitud() {
             </div>
           </div>
 
-          {/* SECCIÓN 2: CANDIDATO */}
           <div>
             <h3 className="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">2. Datos del Candidato</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -225,7 +212,6 @@ export default function NuevaSolicitud() {
             </div>
           </div>
 
-          {/* SECCIÓN 3: ADICIONALES Y CV */}
           <div>
             <h3 className="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">3. Información Adicional</h3>
             <div className="space-y-6">
