@@ -8,7 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 export default function Equipo() {
   const [usuarios, setUsuarios] = useState<PerfilUsuario[]>([]);
   const [cargando, setCargando] = useState(true);
-  const { perfil } = useAuth(); // Para saber si el que ve esto es el Admin
+  const { perfil } = useAuth(); 
 
   useEffect(() => {
     const obtenerUsuarios = async () => {
