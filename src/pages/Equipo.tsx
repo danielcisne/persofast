@@ -1,4 +1,3 @@
-// src/pages/Equipo.tsx
 import { useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -29,7 +28,6 @@ export default function Equipo() {
     obtenerUsuarios();
   }, []);
 
-  // Función visual para ponerle un icono diferente a cada rol
   const getIconoRol = (rol: string) => {
     switch (rol) {
       case 'Administrador': return <Shield size={16} className="text-purple-600" />;
@@ -39,7 +37,6 @@ export default function Equipo() {
     }
   };
 
-  // Si no es Administrador, le decimos amablemente que no tiene permiso
   if (perfil?.rol !== 'Administrador') {
     return (
       <div className="p-8 text-center flex flex-col items-center justify-center h-full">
