@@ -1,4 +1,3 @@
-// src/pages/CapturaEstudio.tsx
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc, collection, addDoc } from 'firebase/firestore';
@@ -92,13 +91,12 @@ export default function CapturaEstudio() {
     cargarDatos();
   }, [id]);
 
-  // 🔥 NUEVO: Efecto para subir la pantalla automáticamente al cambiar de pestaña
   useEffect(() => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
     });
-  }, [activeTab]); // Se dispara siempre que el valor de activeTab cambia
+  }, [activeTab]); 
 
   const guardarAvance = useCallback(async (datosActuales: Partial<ICapturaEstudio>) => {
     if (!id) return;
